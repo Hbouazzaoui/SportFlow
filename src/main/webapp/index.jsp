@@ -8,6 +8,7 @@
 <h1><%= "Hello World!" %>
 </h1>
 
+hello word
 
 <br/>
 <a href="hello-servlet">Hello Servlet</a>
