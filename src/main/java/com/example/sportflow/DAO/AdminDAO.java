@@ -131,30 +131,93 @@ public class AdminDAO {
     }
 
     public Admin getAdminById(int id) {
+        String sql = "SELECT * FROM user WHERE admin_id = ?";
+        try (Connection connection = Connectiondb.connection();
+             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            preparedStatement.setInt(1, id);
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                if (resultSet.next()) {
+                    return new Admin(
+                            resultSet.getInt("admin_id"),
+                            resultSet.getString("username"),
+                            resultSet.getString("password"),
+                            resultSet.getString("role"),
+                            resultSet.getString("email"),
+                            resultSet.getString("birth_date")
+                    );
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     public long getAdminCountByRole(String adminClass) {
-            return 0;
+        String sql = "SELECT COUNT(*) FROM user WHERE role = ?";
+        try (Connection connection = Connectiondb.connection();
+             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            preparedStatement.setString(1, role);
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                if (resultSet.next()) {
+                    return resultSet.getLong(1);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
     }
 
-    public long getSessionCount() {
-            return 0;
-    }
 
-    public void updateCoach(Coach coach) {
-    }
-
-    public void deleteCoach(int id) {
-    }
 
     public void addCoach(Coach coach) {
+        String sql = "INSERT INTO coach (coach_id, speciality) VALUES (?, ?)";
+        try (Connection connection = Connectiondb.connection();
+             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            preparedStatement.setInt(1, coach.getCoach_id());
+            preparedStatement.setString(2, coach.getSpeciality());
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
-
     public Coach getCoachById(int id) {
+        String sql = "SELECT * FROM coach WHERE coach_id = ?";
+        try (Connection connection = Connectiondb.connection();
+             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            preparedStatement.setInt(1, id);
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                if (resultSet.next()) {
+                    return new Coach(
+                            resultSet.getInt("coach_id"),
+                            resultSet.getString("speciality")
+                    );
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     public List<Coach> getAllCoaches() {
+        List<Coach> coaches = new ArrayList<>();
+        String sql = "SELECT * FROM coach";
+        try (Connection connection = Connectiondb.connection();
+             PreparedStatement preparedStatement = connection.prepareStatement(sql);
+             ResultSet resultSet = preparedStatement.executeQuery()) {
+            while (resultSet.next()) {
+                coaches.add(new Coach(
+                        resultSet.getInt("coach_id"),
+                        resultSet.getString("speciality")
+                ));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return coaches;
     }
 
     public void deleteMember(int id) {
@@ -170,5 +233,8 @@ public class AdminDAO {
     }
 
     public List<Member> getAllMembers() {
+    }
+    public long getSessionCount() {
+        return 0;
     }
 }

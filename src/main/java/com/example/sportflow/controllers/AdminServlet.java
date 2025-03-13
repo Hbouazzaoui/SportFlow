@@ -1,6 +1,7 @@
 package com.example.sportflow.controllers;
 
 import com.example.sportflow.DAO.AdminDAO;
+import com.example.sportflow.Model.Admin;
 import com.example.sportflow.Model.Member;
 import com.example.sportflow.Model.Coach;
 import com.example.sportflow.Model.Session;
@@ -85,9 +86,6 @@ public class AdminServlet extends HttpServlet {
         }
     }
 
-    private void editSessionForm(HttpServletRequest request, HttpServletResponse response) {
-    }
-
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String action = request.getPathInfo();
@@ -122,12 +120,6 @@ public class AdminServlet extends HttpServlet {
             default:
                 response.sendError(HttpServletResponse.SC_NOT_FOUND);
         }
-    }
-
-    private void addSession(HttpServletRequest request, HttpServletResponse response) {
-    }
-
-    private void updateSession(HttpServletRequest request, HttpServletResponse response) {
     }
 
     // Dashboard
@@ -191,7 +183,16 @@ public class AdminServlet extends HttpServlet {
         request.getRequestDispatcher("/WEB-INF/views/session/add.jsp").forward(request, response);
     }
 
+    private void addSession(HttpServletRequest request, HttpServletResponse response) throws IOException {
 
+    }
+
+    private void editSessionForm(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    }
+
+    private void updateSession(HttpServletRequest request, HttpServletResponse response) throws IOException {
+
+    }
 
     private void deleteSession(HttpServletRequest request, HttpServletResponse response) throws IOException {
 
@@ -216,7 +217,7 @@ public class AdminServlet extends HttpServlet {
         String name = request.getParameter("name");
         String speciality = request.getParameter("speciality");
 
-        Coach coach = new Coach(name, speciality, speciality);
+        Coach coach = new Coach(name, speciality);
         adminDAO.addCoach(coach);
 
         response.sendRedirect(request.getContextPath() + "/AdminServlet/coach");
@@ -241,8 +242,6 @@ public class AdminServlet extends HttpServlet {
     }
 
     private void deleteCoach(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        int id = Integer.parseInt(request.getParameter("id"));
-        adminDAO.deleteCoach(id);
-        response.sendRedirect(request.getContextPath() + "/AdminServlet/coach");
+
     }
 }

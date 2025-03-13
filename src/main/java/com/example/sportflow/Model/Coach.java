@@ -10,6 +10,10 @@ public class Coach {
         this.speciality = speciality;
     }
 
+    public Coach(int coach_id, String speciality) {
+
+    }
+
     public int getCoach_id() {
         return coach_id;
     }
