@@ -1,16 +1,17 @@
 package com.example.sportflow.Model;
 
 public class Admin {
-    private int admin_id ;
+    private int id;
     private String username;
     private String password;
     private String role;
     private String email;
     private String birth_date;
+    private String sport; // For members
+    private String speciality; // For coaches
 
-
-    public Admin(int admin_id, String username, String password, String role, String email, String birth_date) {
-        this.admin_id = admin_id;
+    public Admin(int id, String username, String password, String role, String email, String birth_date) {
+        this.id = id;
         this.username = username;
         this.password = password;
         this.role = role;
@@ -18,57 +19,44 @@ public class Admin {
         this.birth_date = birth_date;
     }
 
-    public String getBirth_date() {
-        return birth_date;
-    }
-
-    public void setBirth_date(String birth_date) {
-        this.birth_date = birth_date;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
+    // Getters and Setters
     public int getId() {
-        return admin_id;
-    }
-
-    public void setId(int id) {
-        this.admin_id = admin_id;
+        return id;
     }
 
     public String getUsername() {
         return username;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
     public String getPassword() {
         return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
     }
 
     public String getRole() {
         return role;
     }
 
-    public void setRole(String role) {
-        this.role = role;
+    public String getEmail() {
+        return email;
+    }
+
+    public String getBirth_date() {
+        return birth_date;
     }
 
     public String getSport() {
+        return sport;
+    }
+
+    public void setSport(String sport) {
+        this.sport = sport;
     }
 
     public String getSpeciality() {
+        return speciality;
+    }
+
+    public void setSpeciality(String speciality) {
+        this.speciality = speciality;
     }
 }
