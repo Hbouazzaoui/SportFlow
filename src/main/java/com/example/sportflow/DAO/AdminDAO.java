@@ -219,22 +219,100 @@ public class AdminDAO {
         }
         return coaches;
     }
-
-    public void deleteMember(int id) {
+    public void updateCoach(Coach coach) {
+        String sql = "UPDATE coach SET speciality = ? WHERE coach_id = ?";
+        try (Connection connection = Connectiondb.connection();
+             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            preparedStatement.setString(1, coach.getSpeciality());
+            preparedStatement.setInt(2, coach.getCoach_id());
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
-    public void updateMember(Member member) {
+    public void deleteCoach(int id) {
+        String sql = "DELETE FROM coach WHERE coach_id = ?";
+        try (Connection connection = Connectiondb.connection();
+             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            preparedStatement.setInt(1, id);
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
-    public Member getMemberById(int id) {
-    }
-
+    //Member
     public void addMember(Member member) {
+        String sql = "INSERT INTO member (member_id, sport) VALUES (?, ?)";
+        try (Connection connection = Connectiondb.connection();
+             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            preparedStatement.setInt(1, member.getMember_id());
+            preparedStatement.setString(2, member.getSport());
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     public List<Member> getAllMembers() {
+        List<Member> members = new ArrayList<>();
+        String sql = "SELECT * FROM member";
+        try (Connection connection = Connectiondb.connection();
+             PreparedStatement preparedStatement = connection.prepareStatement(sql);
+             ResultSet resultSet = preparedStatement.executeQuery()) {
+            while (resultSet.next()) {
+                members.add(new Member(
+                        resultSet.getInt("member_id"),
+                        resultSet.getString("sport")
+                ));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return members;
     }
-    public long getSessionCount() {
-        return 0;
+
+    public Member getMemberById(int id) {
+        String sql = "SELECT * FROM member WHERE member_id = ?";
+        try (Connection connection = Connectiondb.connection();
+             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            preparedStatement.setInt(1, id);
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                if (resultSet.next()) {
+                    return new Member(
+                            resultSet.getInt("member_id"),
+                            resultSet.getString("sport")
+                    );
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
+
+    public void updateMember(Member member) {
+        String sql = "UPDATE member SET sport = ? WHERE member_id = ?";
+        try (Connection connection = Connectiondb.connection();
+             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            preparedStatement.setString(1, member.getSport());
+            preparedStatement.setInt(2, member.getMember_id());
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void deleteMember(int id) {
+        String sql = "DELETE FROM member WHERE member_id = ?";
+        try (Connection connection = Connectiondb.connection();
+             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            preparedStatement.setInt(1, id);
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
 }

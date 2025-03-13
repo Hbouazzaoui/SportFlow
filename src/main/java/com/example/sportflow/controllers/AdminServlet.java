@@ -159,19 +159,39 @@ public class AdminServlet extends HttpServlet {
     }
 
     private void addMember(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        String name = request.getParameter("name");
+        String birthDate = request.getParameter("birthDate");
+        String sport = request.getParameter("sport");
 
+        Member member = new Member(name, birthDate, sport);
+        adminDAO.addMember(member);
+
+        response.sendRedirect(request.getContextPath() + "/AdminServlet/member");
     }
 
     private void editMemberForm(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-
+        int id = Integer.parseInt(request.getParameter("id"));
+        Member member = adminDAO.getMemberById(id);
+        request.setAttribute("member", member);
+        request.getRequestDispatcher("/WEB-INF/views/member/edit.jsp").forward(request, response);
     }
 
     private void updateMember(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        int id = Integer.parseInt(request.getParameter("id"));
+        String name = request.getParameter("name");
+        String birthDate = request.getParameter("birthDate");
+        String sport = request.getParameter("sport");
 
+        Member member = new Member(id, name, birthDate, sport);
+        adminDAO.updateMember(member);
+
+        response.sendRedirect(request.getContextPath() + "/AdminServlet/member");
     }
 
     private void deleteMember(HttpServletRequest request, HttpServletResponse response) throws IOException {
-
+        int id = Integer.parseInt(request.getParameter("id"));
+        adminDAO.deleteMember(id);
+        response.sendRedirect(request.getContextPath() + "/AdminServlet/member");
     }
 
     // Session Management
@@ -242,6 +262,8 @@ public class AdminServlet extends HttpServlet {
     }
 
     private void deleteCoach(HttpServletRequest request, HttpServletResponse response) throws IOException {
-
+        int id = Integer.parseInt(request.getParameter("id"));
+        adminDAO.deleteCoach(id);
+        response.sendRedirect(request.getContextPath() + "/AdminServlet/coach");
     }
 }
