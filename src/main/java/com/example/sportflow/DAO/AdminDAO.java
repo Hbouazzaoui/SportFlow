@@ -1,6 +1,8 @@
 package com.example.sportflow.DAO;
 
 import com.example.sportflow.Model.Admin;
+import com.example.sportflow.Model.Coach;
+import com.example.sportflow.Model.Member;
 import com.example.sportflow.connection.Connectiondb;
 
 import java.sql.*;
@@ -126,5 +128,47 @@ public class AdminDAO {
             }
             throw new RuntimeException("Error adding user: " + e.getMessage(), e);
         }
+    }
+
+    public Admin getAdminById(int id) {
+    }
+
+    public long getAdminCountByRole(String adminClass) {
+            return 0;
+    }
+
+    public long getSessionCount() {
+            return 0;
+    }
+
+    public void updateCoach(Coach coach) {
+    }
+
+    public void deleteCoach(int id) {
+    }
+
+    public void addCoach(Coach coach) {
+    }
+
+
+    public Coach getCoachById(int id) {
+    }
+
+    public List<Coach> getAllCoaches() {
+    }
+
+    public void deleteMember(int id) {
+    }
+
+    public void updateMember(Member member) {
+    }
+
+    public Member getMemberById(int id) {
+    }
+
+    public void addMember(Member member) {
+    }
+
+    public List<Member> getAllMembers() {
     }
 }

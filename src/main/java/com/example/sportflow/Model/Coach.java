@@ -5,7 +5,7 @@ public class Coach {
     private String speciality;
 
 
-    public Coach(int coach_id, String speciality) {
+    public Coach(String coach_id, String speciality, String s) {
         this.coach_id = coach_id;
         this.speciality = speciality;
     }
