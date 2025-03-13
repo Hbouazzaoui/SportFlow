@@ -89,13 +89,15 @@ public class AdminServlet extends HttpServlet {
         request.getRequestDispatcher("/WEB-INF/views/profile/profile.jsp").forward(request,response);
 
     }
-    private void editCoachForm(HttpServletRequest request, HttpServletResponse response) {
 
-
-    }
 
 
     private void addCoachForm(HttpServletRequest request, HttpServletResponse response) {
+
+    }
+
+    private void editCoachForm(HttpServletRequest request, HttpServletResponse response) {
+
 
     }
 

@@ -10,7 +10,7 @@ import java.util.List;
 public class AdminDAO {
 
     public static List<Admin> list() {
-        String sql = "SELECT * FROM sportflow";
+        String sql = "SELECT * FROM user"; // Changed from 'sportflow' to 'user'
         List<Admin> admins = new ArrayList<>();
 
         try (Connection connection = Connectiondb.connection();
@@ -18,15 +18,14 @@ public class AdminDAO {
              ResultSet resultSet = preparedStatement.executeQuery()) {
 
             while (resultSet.next()) {
-                int id = resultSet.getInt("id");
+                int id = resultSet.getInt("admin_id");
                 String username = resultSet.getString("username");
                 String password = resultSet.getString("password");
                 String role = resultSet.getString("role");
                 String email = resultSet.getString("email");
                 String birth_date = resultSet.getString("birth_date");
 
-
-                Admin admin = new Admin(id, username, password, role, email,birth_date);
+                Admin admin = new Admin(id, username, password, role, email, birth_date);
                 admins.add(admin);
             }
 
@@ -72,13 +71,60 @@ public class AdminDAO {
         }
     }
 
-    public long getAdminCountByRole(Class<? extends Admin> role) {
+    public void addUser(Admin admin) {
+        try (Connection connection = Connectiondb.connection()) {
+            connection.setAutoCommit(false); // Start transaction
 
-        return 0;
-    }
+            String insertUserQuery = "INSERT INTO user (username, birth_date, email, password, role) VALUES (?, ?, ?, ?, ?)";
+            try (PreparedStatement userStatement = connection.prepareStatement(insertUserQuery, Statement.RETURN_GENERATED_KEYS)) {
+                userStatement.setString(1, admin.getUsername());
+                userStatement.setString(2, admin.getBirth_date());
+                userStatement.setString(3, admin.getEmail());
+                userStatement.setString(4, admin.getPassword());
+                userStatement.setString(5, admin.getRole());
 
-    public long getSessionCount() {
+                int affectedRows = userStatement.executeUpdate();
+                if (affectedRows == 0) {
+                    throw new SQLException("Creating user failed, no rows affected.");
+                }
 
-        return 0;
+                try (ResultSet generatedKeys = userStatement.getGeneratedKeys()) {
+                    if (generatedKeys.next()) {
+                        int adminID = generatedKeys.getInt(1);
+
+                        if ("member".equalsIgnoreCase(admin.getRole())) {
+                            String insertMemberQuery = "INSERT INTO member (member_id, sport) VALUES (?, ?)";
+                            try (PreparedStatement memberStatement = connection.prepareStatement(insertMemberQuery)) {
+                                memberStatement.setInt(1, adminID);
+                                memberStatement.setString(2, admin.getSport());
+                                memberStatement.executeUpdate();
+                            }
+                        } else if ("coach".equalsIgnoreCase(admin.getRole())) {
+                            String insertCoachQuery = "INSERT INTO coach (coach_id, speciality) VALUES (?, ?)";
+                            try (PreparedStatement coachStatement = connection.prepareStatement(insertCoachQuery)) {
+                                coachStatement.setInt(1, adminID);
+                                coachStatement.setString(2, admin.getSpeciality());
+                                coachStatement.executeUpdate();
+                            }
+                        } else {
+                            throw new SQLException("Invalid role: " + admin.getRole());
+                        }
+                    } else {
+                        throw new SQLException("Failed to retrieve admin_id.");
+                    }
+                }
+            }
+
+            connection.commit(); // Commit transaction
+        } catch (SQLException e) {
+            e.printStackTrace();
+            // Rollback transaction in case of error
+            try (Connection connection = Connectiondb.connection()) {
+                connection.rollback();
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
+            throw new RuntimeException("Error adding user: " + e.getMessage(), e);
+        }
     }
 }

@@ -65,4 +65,10 @@ public class Admin {
     public void setRole(String role) {
         this.role = role;
     }
+
+    public String getSport() {
+    }
+
+    public String getSpeciality() {
+    }
 }

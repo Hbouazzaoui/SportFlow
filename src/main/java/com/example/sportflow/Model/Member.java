@@ -24,4 +24,5 @@ public class Member {
     public void setSport(String sport) {
         this.sport = sport;
     }
+
 }
