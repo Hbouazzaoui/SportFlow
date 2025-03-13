@@ -1,20 +1,44 @@
 package com.example.sportflow.Model;
 
 public class Member {
-    private int member_id;
+    private int memberId;
+    private String name;
+    private String birthDate;
     private String sport;
 
-    public Member(int member_id, String sport) {
-        this.member_id = member_id;
+    // Constructors
+    public Member() {}
+
+    public Member(int memberId, String name, String birthDate, String sport) {
+        this.memberId = memberId;
+        this.name = name;
+        this.birthDate = birthDate;
         this.sport = sport;
     }
 
-    public int getMember_id() {
-        return member_id;
+    // Getters and Setters
+    public int getMemberId() {
+        return memberId;
     }
 
-    public void setMember_id(int member_id) {
-        this.member_id = member_id;
+    public void setMemberId(int memberId) {
+        this.memberId = memberId;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getBirthDate() {
+        return birthDate;
+    }
+
+    public void setBirthDate(String birthDate) {
+        this.birthDate = birthDate;
     }
 
     public String getSport() {

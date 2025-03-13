@@ -1,6 +1,8 @@
 package com.example.sportflow.DAO;
 
 import com.example.sportflow.Model.Admin;
+import com.example.sportflow.Model.Coach;
+import com.example.sportflow.Model.Member;
 import com.example.sportflow.connection.Connectiondb;
 
 import java.sql.*;
@@ -10,7 +12,7 @@ import java.util.List;
 public class AdminDAO {
 
     public static List<Admin> list() {
-        String sql = "SELECT * FROM sportflow";
+        String sql = "SELECT * FROM user"; // Changed from 'sportflow' to 'user'
         List<Admin> admins = new ArrayList<>();
 
         try (Connection connection = Connectiondb.connection();
@@ -18,15 +20,14 @@ public class AdminDAO {
              ResultSet resultSet = preparedStatement.executeQuery()) {
 
             while (resultSet.next()) {
-                int id = resultSet.getInt("id");
+                int id = resultSet.getInt("admin_id");
                 String username = resultSet.getString("username");
                 String password = resultSet.getString("password");
                 String role = resultSet.getString("role");
                 String email = resultSet.getString("email");
                 String birth_date = resultSet.getString("birth_date");
 
-
-                Admin admin = new Admin(id, username, password, role, email,birth_date);
+                Admin admin = new Admin(id, username, password, role, email, birth_date);
                 admins.add(admin);
             }
 
@@ -72,13 +73,249 @@ public class AdminDAO {
         }
     }
 
-    public long getAdminCountByRole(Class<? extends Admin> role) {
+    public void addUser(Admin admin) {
+        try (Connection connection = Connectiondb.connection()) {
+            connection.setAutoCommit(false); // Start transaction
 
+            String insertUserQuery = "INSERT INTO user (username, birth_date, email, password, role) VALUES (?, ?, ?, ?, ?)";
+            try (PreparedStatement userStatement = connection.prepareStatement(insertUserQuery, Statement.RETURN_GENERATED_KEYS)) {
+                userStatement.setString(1, admin.getUsername());
+                userStatement.setString(2, admin.getBirth_date());
+                userStatement.setString(3, admin.getEmail());
+                userStatement.setString(4, admin.getPassword());
+                userStatement.setString(5, admin.getRole());
+
+                int affectedRows = userStatement.executeUpdate();
+                if (affectedRows == 0) {
+                    throw new SQLException("Creating user failed, no rows affected.");
+                }
+
+                try (ResultSet generatedKeys = userStatement.getGeneratedKeys()) {
+                    if (generatedKeys.next()) {
+                        int adminID = generatedKeys.getInt(1);
+
+                        if ("member".equalsIgnoreCase(admin.getRole())) {
+                            String insertMemberQuery = "INSERT INTO member (member_id, sport) VALUES (?, ?)";
+                            try (PreparedStatement memberStatement = connection.prepareStatement(insertMemberQuery)) {
+                                memberStatement.setInt(1, adminID);
+                                memberStatement.setString(2, admin.getSport());
+                                memberStatement.executeUpdate();
+                            }
+                        } else if ("coach".equalsIgnoreCase(admin.getRole())) {
+                            String insertCoachQuery = "INSERT INTO coach (coach_id, speciality) VALUES (?, ?)";
+                            try (PreparedStatement coachStatement = connection.prepareStatement(insertCoachQuery)) {
+                                coachStatement.setInt(1, adminID);
+                                coachStatement.setString(2, admin.getSpeciality());
+                                coachStatement.executeUpdate();
+                            }
+                        } else {
+                            throw new SQLException("Invalid role: " + admin.getRole());
+                        }
+                    } else {
+                        throw new SQLException("Failed to retrieve admin_id.");
+                    }
+                }
+            }
+
+            connection.commit(); // Commit transaction
+        } catch (SQLException e) {
+            e.printStackTrace();
+            // Rollback transaction in case of error
+            try (Connection connection = Connectiondb.connection()) {
+                connection.rollback();
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
+            throw new RuntimeException("Error adding user: " + e.getMessage(), e);
+        }
+    }
+
+    public Admin getAdminById(int id) {
+        String sql = "SELECT * FROM user WHERE admin_id = ?";
+        try (Connection connection = Connectiondb.connection();
+             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            preparedStatement.setInt(1, id);
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                if (resultSet.next()) {
+                    return new Admin(
+                            resultSet.getInt("admin_id"),
+                            resultSet.getString("username"),
+                            resultSet.getString("password"),
+                            resultSet.getString("role"),
+                            resultSet.getString("email"),
+                            resultSet.getString("birth_date")
+                    );
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public long getAdminCountByRole(String role) {
+        String sql = "SELECT COUNT(*) FROM user WHERE role = ?";
+        try (Connection connection = Connectiondb.connection();
+             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            preparedStatement.setString(1, role);
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                if (resultSet.next()) {
+                    return resultSet.getLong(1);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
         return 0;
     }
 
-    public long getSessionCount() {
 
+
+    public void addCoach(Coach coach) {
+        String sql = "INSERT INTO coach (coach_id, speciality) VALUES (?, ?)";
+        try (Connection connection = Connectiondb.connection();
+             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            preparedStatement.setInt(1, coach.getCoach_id());
+            preparedStatement.setString(2, coach.getSpeciality());
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public Coach getCoachById(int id) {
+        String sql = "SELECT * FROM coach WHERE coach_id = ?";
+        try (Connection connection = Connectiondb.connection();
+             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            preparedStatement.setInt(1, id);
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                if (resultSet.next()) {
+                    return new Coach(
+                            resultSet.getInt("coach_id"),
+                            resultSet.getString("speciality")
+                    );
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public List<Coach> getAllCoaches() {
+        List<Coach> coaches = new ArrayList<>();
+        String sql = "SELECT * FROM coach";
+        try (Connection connection = Connectiondb.connection();
+             PreparedStatement preparedStatement = connection.prepareStatement(sql);
+             ResultSet resultSet = preparedStatement.executeQuery()) {
+            while (resultSet.next()) {
+                coaches.add(new Coach(
+                        resultSet.getInt("coach_id"),
+                        resultSet.getString("speciality")
+                ));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return coaches;
+    }
+    public void updateCoach(Coach coach) {
+        String sql = "UPDATE coach SET speciality = ? WHERE coach_id = ?";
+        try (Connection connection = Connectiondb.connection();
+             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            preparedStatement.setString(1, coach.getSpeciality());
+            preparedStatement.setInt(2, coach.getCoach_id());
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void deleteCoach(int id) {
+        String sql = "DELETE FROM coach WHERE coach_id = ?";
+        try (Connection connection = Connectiondb.connection();
+             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            preparedStatement.setInt(1, id);
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    //Member
+    public void addMember(Member member) {
+        String sql = "INSERT INTO member (member_id, sport) VALUES (?, ?)";
+        try (Connection connection = Connectiondb.connection();
+             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            preparedStatement.setInt(1, member.getMember_id());
+            preparedStatement.setString(2, member.getSport());
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public List<Member> getAllMembers() {
+        List<Member> members = new ArrayList<>();
+        String sql = "SELECT * FROM member";
+        try (Connection connection = Connectiondb.connection();
+             PreparedStatement preparedStatement = connection.prepareStatement(sql);
+             ResultSet resultSet = preparedStatement.executeQuery()) {
+            while (resultSet.next()) {
+                members.add(new Member(
+                        resultSet.getInt("member_id"),
+                        resultSet.getString("sport")
+                ));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return members;
+    }
+
+    public Member getMemberById(int id) {
+        String sql = "SELECT * FROM member WHERE member_id = ?";
+        try (Connection connection = Connectiondb.connection();
+             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            preparedStatement.setInt(1, id);
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                if (resultSet.next()) {
+                    return new Member(
+                            resultSet.getInt("member_id"),
+                            resultSet.getString("sport")
+                    );
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public void updateMember(Member member) {
+        String sql = "UPDATE member SET sport = ? WHERE member_id = ?";
+        try (Connection connection = Connectiondb.connection();
+             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            preparedStatement.setString(1, member.getSport());
+            preparedStatement.setInt(2, member.getMember_id());
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void deleteMember(int id) {
+        String sql = "DELETE FROM member WHERE member_id = ?";
+        try (Connection connection = Connectiondb.connection();
+             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            preparedStatement.setInt(1, id);
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public long getSessionCount() {
         return 0;
     }
 }

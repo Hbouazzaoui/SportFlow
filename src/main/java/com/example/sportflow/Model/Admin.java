@@ -1,45 +1,32 @@
 package com.example.sportflow.Model;
 
 public class Admin {
-    private int admin_id ;
+    private int id;
     private String username;
     private String password;
     private String role;
     private String email;
-    private String birth_date;
+    private String birthDate;
 
+    // Constructors
+    public Admin() {}
 
-    public Admin(int admin_id, String username, String password, String role, String email, String birth_date) {
-        this.admin_id = admin_id;
+    public Admin(int id, String username, String password, String role, String email, String birthDate) {
+        this.id = id;
         this.username = username;
         this.password = password;
         this.role = role;
         this.email = email;
-        this.birth_date = birth_date;
+        this.birthDate = birthDate;
     }
 
-    public String getBirth_date() {
-        return birth_date;
-    }
-
-    public void setBirth_date(String birth_date) {
-        this.birth_date = birth_date;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
+    // Getters and Setters
     public int getId() {
-        return admin_id;
+        return id;
     }
 
     public void setId(int id) {
-        this.admin_id = admin_id;
+        this.id = id;
     }
 
     public String getUsername() {
@@ -64,5 +51,21 @@ public class Admin {
 
     public void setRole(String role) {
         this.role = role;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getBirthDate() {
+        return birthDate;
+    }
+
+    public void setBirthDate(String birthDate) {
+        this.birthDate = birthDate;
     }
 }
