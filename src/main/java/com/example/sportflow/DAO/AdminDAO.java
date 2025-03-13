@@ -153,7 +153,7 @@ public class AdminDAO {
         return null;
     }
 
-    public long getAdminCountByRole(String adminClass) {
+    public long getAdminCountByRole(String role) {
         String sql = "SELECT COUNT(*) FROM user WHERE role = ?";
         try (Connection connection = Connectiondb.connection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
@@ -315,4 +315,7 @@ public class AdminDAO {
         }
     }
 
+    public long getSessionCount() {
+        return 0;
+    }
 }

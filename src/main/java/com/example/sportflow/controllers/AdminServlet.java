@@ -1,10 +1,8 @@
 package com.example.sportflow.controllers;
 
 import com.example.sportflow.DAO.AdminDAO;
-import com.example.sportflow.Model.Admin;
 import com.example.sportflow.Model.Member;
 import com.example.sportflow.Model.Coach;
-import com.example.sportflow.Model.Session;
 import jakarta.servlet.*;
 import jakarta.servlet.http.*;
 import jakarta.servlet.annotation.*;
@@ -160,10 +158,10 @@ public class AdminServlet extends HttpServlet {
 
     private void addMember(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String name = request.getParameter("name");
-        String birthDate = request.getParameter("birthDate");
+        String birth_date = request.getParameter("birthDate");
         String sport = request.getParameter("sport");
 
-        Member member = new Member(name, birthDate, sport);
+        Member member = new Member(name, birt, sport);
         adminDAO.addMember(member);
 
         response.sendRedirect(request.getContextPath() + "/AdminServlet/member");
@@ -255,7 +253,7 @@ public class AdminServlet extends HttpServlet {
         String name = request.getParameter("name");
         String speciality = request.getParameter("speciality");
 
-        Coach coach = new Coach(id, name, speciality);
+        Coach coach = new Coach(name, speciality);
         adminDAO.updateCoach(coach);
 
         response.sendRedirect(request.getContextPath() + "/AdminServlet/coach");

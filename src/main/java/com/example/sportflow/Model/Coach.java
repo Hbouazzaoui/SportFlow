@@ -1,25 +1,34 @@
 package com.example.sportflow.Model;
 
 public class Coach {
-    private int coach_id;
+    private int coachId;
+    private String name;
     private String speciality;
 
+    // Constructors
+    public Coach() {}
 
-    public Coach(String coach_id, String speciality, String s) {
-        this.coach_id = coach_id;
+    public Coach(int coachId, String name, String speciality) {
+        this.coachId = coachId;
+        this.name = name;
         this.speciality = speciality;
     }
 
-    public Coach(int coach_id, String speciality) {
-
+    // Getters and Setters
+    public int getCoachId() {
+        return coachId;
     }
 
-    public int getCoach_id() {
-        return coach_id;
+    public void setCoachId(int coachId) {
+        this.coachId = coachId;
     }
 
-    public void setCoach_id(int coach_id) {
-        this.coach_id = coach_id;
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getSpeciality() {
