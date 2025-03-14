@@ -7,6 +7,8 @@ public class Admin {
     private String role;
     private String email;
     private String birthDate;
+    private String sport; // For members
+    private String speciality; // For coaches
 
     // Constructors
     public Admin() {}
@@ -67,5 +69,21 @@ public class Admin {
 
     public void setBirthDate(String birthDate) {
         this.birthDate = birthDate;
+    }
+
+    public String getSport() {
+        return sport;
+    }
+
+    public void setSport(String sport) {
+        this.sport = sport;
+    }
+
+    public String getSpeciality() {
+        return speciality;
+    }
+
+    public void setSpeciality(String speciality) {
+        this.speciality = speciality;
     }
 }

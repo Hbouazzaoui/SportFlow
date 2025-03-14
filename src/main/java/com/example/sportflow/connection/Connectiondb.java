@@ -15,5 +15,4 @@ public class Connectiondb {
             throw new RuntimeException(e);
         }
     }
-
 }

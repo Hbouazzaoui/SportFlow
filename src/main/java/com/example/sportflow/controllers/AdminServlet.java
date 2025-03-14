@@ -158,10 +158,10 @@ public class AdminServlet extends HttpServlet {
 
     private void addMember(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String name = request.getParameter("name");
-        String birth_date = request.getParameter("birthDate");
+        String birth_date = request.getParameter("birth_date");
         String sport = request.getParameter("sport");
 
-        Member member = new Member(name, birt, sport);
+        Member member = new Member(name, birth_date, sport);
         adminDAO.addMember(member);
 
         response.sendRedirect(request.getContextPath() + "/AdminServlet/member");
@@ -177,10 +177,10 @@ public class AdminServlet extends HttpServlet {
     private void updateMember(HttpServletRequest request, HttpServletResponse response) throws IOException {
         int id = Integer.parseInt(request.getParameter("id"));
         String name = request.getParameter("name");
-        String birthDate = request.getParameter("birthDate");
+        String birth_date = request.getParameter("birth_date");
         String sport = request.getParameter("sport");
 
-        Member member = new Member(id, name, birthDate, sport);
+        Member member = new Member(name, birth_date, sport);
         adminDAO.updateMember(member);
 
         response.sendRedirect(request.getContextPath() + "/AdminServlet/member");
@@ -201,7 +201,8 @@ public class AdminServlet extends HttpServlet {
         request.getRequestDispatcher("/WEB-INF/views/session/add.jsp").forward(request, response);
     }
 
-    private void addSession(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    private void addSession(HttpServletRequest request, HttpServletResponse response) throws IOException
+    {
 
     }
 

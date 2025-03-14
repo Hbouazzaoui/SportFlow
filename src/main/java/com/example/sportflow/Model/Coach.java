@@ -5,13 +5,14 @@ public class Coach {
     private String name;
     private String speciality;
 
-    // Constructors
-    public Coach() {}
-
-    public Coach(int coachId, String name, String speciality) {
+    public Coach(String name, String speciality) {
         this.coachId = coachId;
         this.name = name;
         this.speciality = speciality;
+    }
+
+    public Coach(int coach_id, String speciality) {
+
     }
 
     // Getters and Setters

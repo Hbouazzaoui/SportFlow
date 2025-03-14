@@ -12,7 +12,7 @@ import java.util.List;
 public class AdminDAO {
 
     public static List<Admin> list() {
-        String sql = "SELECT * FROM user"; // Changed from 'sportflow' to 'user'
+        String sql = "SELECT * FROM user";
         List<Admin> admins = new ArrayList<>();
 
         try (Connection connection = Connectiondb.connection();
@@ -25,9 +25,9 @@ public class AdminDAO {
                 String password = resultSet.getString("password");
                 String role = resultSet.getString("role");
                 String email = resultSet.getString("email");
-                String birth_date = resultSet.getString("birth_date");
+                String birthDate = resultSet.getString("birth_date");
 
-                Admin admin = new Admin(id, username, password, role, email, birth_date);
+                Admin admin = new Admin(id, username, password, role, email, birthDate);
                 admins.add(admin);
             }
 
@@ -80,7 +80,7 @@ public class AdminDAO {
             String insertUserQuery = "INSERT INTO user (username, birth_date, email, password, role) VALUES (?, ?, ?, ?, ?)";
             try (PreparedStatement userStatement = connection.prepareStatement(insertUserQuery, Statement.RETURN_GENERATED_KEYS)) {
                 userStatement.setString(1, admin.getUsername());
-                userStatement.setString(2, admin.getBirth_date());
+                userStatement.setString(2, admin.getBirthDate());
                 userStatement.setString(3, admin.getEmail());
                 userStatement.setString(4, admin.getPassword());
                 userStatement.setString(5, admin.getRole());
@@ -169,13 +169,48 @@ public class AdminDAO {
         return 0;
     }
 
+    public long getSessionCount() {
+        String sql = "SELECT COUNT(*) FROM session";
+        try (Connection connection = Connectiondb.connection();
+             PreparedStatement preparedStatement = connection.prepareStatement(sql);
+             ResultSet resultSet = preparedStatement.executeQuery()) {
+            if (resultSet.next()) {
+                return resultSet.getLong(1);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
 
+    public void updateCoach(Coach coach) {
+        String sql = "UPDATE coach SET speciality = ? WHERE coach_id = ?";
+        try (Connection connection = Connectiondb.connection();
+             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            preparedStatement.setString(1, coach.getSpeciality());
+            preparedStatement.setInt(2, coach.getCoachId());
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void deleteCoach(int id) {
+        String sql = "DELETE FROM coach WHERE coach_id = ?";
+        try (Connection connection = Connectiondb.connection();
+             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            preparedStatement.setInt(1, id);
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 
     public void addCoach(Coach coach) {
         String sql = "INSERT INTO coach (coach_id, speciality) VALUES (?, ?)";
         try (Connection connection = Connectiondb.connection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-            preparedStatement.setInt(1, coach.getCoach_id());
+            preparedStatement.setInt(1, coach.getCoachId());
             preparedStatement.setString(2, coach.getSpeciality());
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
@@ -219,20 +254,9 @@ public class AdminDAO {
         }
         return coaches;
     }
-    public void updateCoach(Coach coach) {
-        String sql = "UPDATE coach SET speciality = ? WHERE coach_id = ?";
-        try (Connection connection = Connectiondb.connection();
-             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-            preparedStatement.setString(1, coach.getSpeciality());
-            preparedStatement.setInt(2, coach.getCoach_id());
-            preparedStatement.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
 
-    public void deleteCoach(int id) {
-        String sql = "DELETE FROM coach WHERE coach_id = ?";
+    public void deleteMember(int id) {
+        String sql = "DELETE FROM member WHERE member_id = ?";
         try (Connection connection = Connectiondb.connection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             preparedStatement.setInt(1, id);
@@ -242,12 +266,42 @@ public class AdminDAO {
         }
     }
 
-    //Member
+    public void updateMember(Member member) {
+        String sql = "UPDATE member SET sport = ? WHERE member_id = ?";
+        try (Connection connection = Connectiondb.connection();
+             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            preparedStatement.setString(1, member.getSport());
+            preparedStatement.setInt(2, member.getMemberId());
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public Member getMemberById(int id) {
+        String sql = "SELECT * FROM member WHERE member_id = ?";
+        try (Connection connection = Connectiondb.connection();
+             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            preparedStatement.setInt(1, id);
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                if (resultSet.next()) {
+                    return new Member(
+                            resultSet.getInt("member_id"),
+                            resultSet.getString("sport")
+                    );
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     public void addMember(Member member) {
         String sql = "INSERT INTO member (member_id, sport) VALUES (?, ?)";
         try (Connection connection = Connectiondb.connection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-            preparedStatement.setInt(1, member.getMember_id());
+            preparedStatement.setInt(1, member.getMemberId());
             preparedStatement.setString(2, member.getSport());
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
@@ -271,51 +325,5 @@ public class AdminDAO {
             e.printStackTrace();
         }
         return members;
-    }
-
-    public Member getMemberById(int id) {
-        String sql = "SELECT * FROM member WHERE member_id = ?";
-        try (Connection connection = Connectiondb.connection();
-             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-            preparedStatement.setInt(1, id);
-            try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                if (resultSet.next()) {
-                    return new Member(
-                            resultSet.getInt("member_id"),
-                            resultSet.getString("sport")
-                    );
-                }
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    public void updateMember(Member member) {
-        String sql = "UPDATE member SET sport = ? WHERE member_id = ?";
-        try (Connection connection = Connectiondb.connection();
-             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-            preparedStatement.setString(1, member.getSport());
-            preparedStatement.setInt(2, member.getMember_id());
-            preparedStatement.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void deleteMember(int id) {
-        String sql = "DELETE FROM member WHERE member_id = ?";
-        try (Connection connection = Connectiondb.connection();
-             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-            preparedStatement.setInt(1, id);
-            preparedStatement.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public long getSessionCount() {
-        return 0;
     }
 }

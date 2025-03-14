@@ -7,9 +7,9 @@ public class Member {
     private String sport;
 
     // Constructors
-    public Member() {}
+    public Member(int member_id, String sport) {}
 
-    public Member(int memberId, String name, String birthDate, String sport) {
+    public Member(String name, String birthDate, String sport) {
         this.memberId = memberId;
         this.name = name;
         this.birthDate = birthDate;
